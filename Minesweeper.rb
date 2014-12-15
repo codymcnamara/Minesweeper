@@ -34,15 +34,16 @@ class Board
 end
 
 class Tile
-    attr_accessor :display, :index, :bomb
-    def initialize(board)
-      @board = board
+    attr_accessor :display, :index, :bomb, :board, :board_class
+    def initialize(board_class)
+      @board_class = board_class
       @display = '*'
       @bomb = false
     end
 
     def set_bomb
       @bomb = true
+      @display = "B"
     end
 
     def reveal
@@ -72,14 +73,19 @@ class Tile
     end
 
     def neighbor_bomb_count
-      # mr_rogers = neighbors
-      #
-      # bomb_count = 0
-      # mr_rogers.each do |neighbor|
-      #   x, y = neighbor
-      #   if @board[x][y].bomb
-      #     bomb_count += 1
-      #   end
+      @board = @board_class.board
+
+      mr_rogers = neighbors
+
+      bomb_count = 0
+      mr_rogers.each do |neighbor|
+        x, y = neighbor
+        if @board[x][y].bomb
+          bomb_count += 1
+        end
+      end
+
+      bomb_count
     end
 
     def valid_index?(ind)
@@ -93,4 +99,4 @@ end
 
 b = Board.new
 b.display
-p b.board[3][3].neighbors
+p b.board[2][2].neighbor_bomb_count
