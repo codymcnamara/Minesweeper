@@ -15,6 +15,24 @@ class Board
 
   end
 
+  def play
+    loop do
+      display
+      puts "Do you want to reveal (r) or flag (f)?"
+      input = gets.chomp
+
+      puts "Please enter coordinates (x, y)"
+      coords = gets.chomp.split(",").map(&:to_i)
+      x, y = coords
+
+      if input == 'f'
+        @board[x][y].display = 'F'
+      else
+        @board[x][y].reveal
+      end
+    end
+  end
+
   def find_index
     self.board.each_with_index do |row, row_index|
       row.each_with_index do |tile, tile_index|
@@ -49,13 +67,21 @@ class Tile
     def reveal
       if @bomb
         @display = "X"
-      elsif self.neighbor_bomb_count < 1
-        @display = "_"
-      else
+        puts "YOU LOSE!"
+        @board_class.display
+        exit
+      elsif self.neighbor_bomb_count > 0
         @display = self.neighbor_bomb_count
+      else
+        @display = "_"
+        check_all_neighbors
       end
 
       @display
+    end
+
+    def check_all_neighbors
+
     end
 
     def neighbors
@@ -98,5 +124,4 @@ class Tile
 end
 
 b = Board.new
-b.display
-p b.board[2][2].neighbor_bomb_count
+b.play
