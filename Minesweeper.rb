@@ -1,3 +1,4 @@
+require 'yaml'
 class Board
   attr_reader :board
   def initialize
@@ -7,12 +8,23 @@ class Board
     #set some bombs up
     @board.each do |row|
       row.each do |tile|
-        if rand(1..100) > 98
+        if rand(1..10) > 8
           tile.set_bomb
         end
       end
     end
 
+  end
+
+  def save
+    #puts "do you wanna save game?"
+    puts "What would you like to call the file"
+    filename = gets.chomp
+
+    File.open("#{filename}.rb", 'w') do |f1|
+      f1.puts self.to_yaml
+    end
+    # puts "saved!"
   end
 
   def play
@@ -30,7 +42,6 @@ class Board
         @board[x][y].display = 'F'
       else
         if @board[x][y].reveal == "_"
-          puts "Found one with no bombs around"
           to_explore = @board[x][y].neighbors
           checked = [@board[x][y]]
           check_all_neighbors(to_explore, checked)
@@ -41,6 +52,13 @@ class Board
         puts "YOU WON!"
         exit
       end
+
+      puts "do you wanna save (y/n)"
+      response = gets.chomp
+      if response == "y"
+        save
+        exit
+      end
     end
 
   end
@@ -48,8 +66,8 @@ class Board
   def won?
     @board.each do |row|
       row.each do |tile|
-        p "tile: #{tile}"
-        p "tile display: #{tile.display}"
+        # p "tile: #{tile}"
+        # p "tile display: #{tile.display}"
         if tile.display == "*"
           return false
         end
@@ -189,5 +207,14 @@ class Tile
     end
 end
 
-b = Board.new
-b.play
+puts "Wanna load an old game? (y/n)"
+response = gets.chomp
+if response == "y"
+  puts "what's the name of the file?"
+  load_file = gets.chomp
+  old_board = YAML::load_file("#{load_file}.rb")
+  old_board.play
+else
+  b = Board.new
+  b.play
+end
