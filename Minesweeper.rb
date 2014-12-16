@@ -7,7 +7,7 @@ class Board
     #set some bombs up
     @board.each do |row|
       row.each do |tile|
-        if rand(1..10) > 9
+        if rand(1..100) > 98
           tile.set_bomb
         end
       end
@@ -27,30 +27,53 @@ class Board
       x, y = coords
 
       if input == 'f'
-        @board[x][y].display = '|F|'
+        @board[x][y].display = 'F'
       else
-        if @board[x][y].reveal == "|_|"
+        if @board[x][y].reveal == "_"
           puts "Found one with no bombs around"
           to_explore = @board[x][y].neighbors
           checked = [@board[x][y]]
           check_all_neighbors(to_explore, checked)
         end
       end
+
+      if won?
+        puts "YOU WON!"
+        exit
+      end
     end
 
+  end
+
+  def won?
+    @board.each do |row|
+      row.each do |tile|
+        p "tile: #{tile}"
+        p "tile display: #{tile.display}"
+        if tile.display == "*"
+          return false
+        end
+      end
+    end
+
+    true
   end
 
   def check_all_neighbors(to_explore, checked)
 
     candidate = to_explore.pop
-    x, y = candidate
-    candidate =
+    #
+    # x, y = candidate
+    # candidate =
     #### changed neighbors method
     while candidate != nil
       if candidate.neighbor_bomb_count == 0 && !(checked.include?(candidate))
         candidate.reveal unless candidate.flagged?
         checked << candidate
         check_all_neighbors(candidate.neighbors, checked)
+      elsif !(checked.include?(candidate))
+        candidate.reveal unless candidate.flagged?
+        checked << candidate
       else
         checked << candidate
       end
@@ -70,7 +93,7 @@ class Board
   def display
     self.board.each do |row|
       row.each do |tile|
-        print tile.display + " "
+        print  tile.display.to_s + " |"
       end
       puts ""
     end
@@ -81,17 +104,17 @@ class Tile
     attr_accessor :display, :index, :bomb, :board, :board_class
     def initialize(board_class)
       @board_class = board_class
-      @display = '|*|'
+      @display = '*'
       @bomb = false
     end
 
     def set_bomb
       @bomb = true
-      @display = "|B|"
+      @display = "B"
     end
 
     def flagged?
-      return true if @display == "|F|"
+      return true if @display == "F"
 
       false
     end
@@ -106,10 +129,10 @@ class Tile
         elsif self.neighbor_bomb_count > 0
           @display = self.neighbor_bomb_count
         else
-          @display = "|_|"
+          @display = "_"
         end
       else
-        puts "cannot unflag"
+        puts "cannot "
       end
 
       @display
