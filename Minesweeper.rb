@@ -24,6 +24,10 @@ class Board
     File.open("#{filename}.rb", 'w') do |f1|
       f1.puts self.to_yaml
     end
+<<<<<<< HEAD
+=======
+    # puts "saved!"
+>>>>>>> 843d70b0e04088306c756c3268301e0c493d21cb
   end
 
   def play
